@@ -1,0 +1,95 @@
+/* ============================================
+   VARIÁVEIS E RESET - Tema Histórias Reais
+   ============================================ */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  /* Paleta Dramática e Realista */
+  --deep-charcoal: #1a1a1a;
+  --dark-slate: #2d2d2d;
+  --warm-gray: #4a4a4a;
+  --steel-blue: #3a4a5a;
+  --burnt-orange: #d4551f;
+  --deep-red: #8b1e1e;
+  --golden-accent: #c9a961;
+  --off-white: #f5f5f0;
+  --paper-white: #fafaf8;
+  --shadow-dark: #0a0a0a;
+
+  /* Texto */
+  --text-primary: #1a1a1a;
+  --text-secondary: #4a4a4a;
+  --text-light: #6a6a6a;
+  --text-inverted: #f5f5f0;
+
+  /* Sombras Dramáticas */
+  --shadow-intense: 0 10px 40px rgba(0, 0, 0, 0.5);
+  --shadow-deep: 0 15px 60px rgba(0, 0, 0, 0.7);
+  --shadow-subtle: 0 4px 20px rgba(0, 0, 0, 0.2);
+
+  /* Gradientes */
+  --gradient-dark: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+  --gradient-dramatic: linear-gradient(135deg, #2d2d2d 0%, #3a4a5a 100%);
+  --gradient-warm: linear-gradient(135deg, #8b1e1e 0%, #d4551f 100%);
+  --gradient-overlay: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.7) 0%,
+    rgba(0, 0, 0, 0.3) 100%
+  );
+}
+
+body {
+  font-family: "Merriweather", "Georgia", "Times New Roman", serif;
+  background: var(--deep-charcoal);
+  background-image: radial-gradient(
+      circle at 20% 50%,
+      rgba(212, 85, 31, 0.05) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 80% 80%,
+      rgba(58, 74, 90, 0.05) 0%,
+      transparent 50%
+    );
+  background-attachment: fixed;
+  color: var(--text-primary);
+  line-height: 1.8;
+  min-height: 100vh;
+}
+
+/* Animações globais */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Utilitários */
+small {
+  color: var(--text-light);
+  color: #909080;
+}
+
+strong {
+  color: var(--burnt-orange);
+  font-weight: 700;
+}

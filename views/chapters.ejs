@@ -9,6 +9,87 @@
       href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;900&display=swap"
       rel="stylesheet"
     />
+    <style>
+      .tree-view {
+        font-family: "Courier New", monospace;
+        background: var(--deep-charcoal);
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+      }
+      .tree-chapter {
+        margin-bottom: 15px;
+        padding: 12px 15px;
+        background: var(--dark-slate);
+        border-left: 3px solid var(--burnt-orange);
+        border-radius: 6px;
+      }
+      .tree-chapter-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 8px;
+        flex-wrap: wrap;
+      }
+      .tree-chapter-title {
+        color: var(--golden-accent);
+        font-size: 0.95em;
+        font-weight: 700;
+        flex: 1;
+        min-width: 200px;
+      }
+      .tree-chapter-number {
+        background: var(--burnt-orange);
+        color: white;
+        padding: 3px 10px;
+        border-radius: 4px;
+        font-size: 0.8em;
+        font-weight: 700;
+      }
+      .tree-actions {
+        display: flex;
+        gap: 5px;
+      }
+      .tree-actions .btn {
+        padding: 4px 10px;
+        font-size: 0.75em;
+      }
+      .tree-choice {
+        margin-left: 20px;
+        padding: 8px 12px;
+        background: rgba(201, 169, 97, 0.1);
+        border-left: 2px solid var(--golden-accent);
+        margin-top: 8px;
+        border-radius: 4px;
+        font-size: 0.85em;
+      }
+      .tree-choice-text {
+        color: var(--off-white);
+        margin-bottom: 4px;
+      }
+      .tree-choice-target {
+        color: var(--golden-accent);
+        font-size: 0.9em;
+        font-style: italic;
+      }
+      .tree-choice-target a {
+        color: var(--golden-accent);
+        text-decoration: none;
+      }
+      .tree-choice-target a:hover {
+        text-decoration: underline;
+      }
+      .view-toggle {
+        margin-bottom: 20px;
+      }
+      .list-view {
+        display: none;
+      }
+      .tree-view.active,
+      .list-view.active {
+        display: block;
+      }
+    </style>
   </head>
   <body class="admin-page">
     <div class="admin-container">
@@ -41,6 +122,24 @@
       </div>
 
       <div class="admin-content">
+        <div class="view-toggle">
+          <button
+            onclick="toggleView('tree')"
+            id="btnTree"
+            class="btn btn-small btn-primary"
+            style="margin-right: 10px"
+          >
+            🌳 Visualização em Árvore
+          </button>
+          <button
+            onclick="toggleView('list')"
+            id="btnList"
+            class="btn btn-small btn-secondary"
+          >
+            📋 Visualização em Lista
+          </button>
+        </div>
+
         <h2>Capítulos (<%= chapters.length %>)</h2>
 
         <% if (chapters.length === 0) { %>
@@ -54,9 +153,61 @@
           </a>
         </div>
         <% } else { %>
-        <ul class="chapter-list">
+
+        <!-- VISUALIZAÇÃO EM ÁRVORE -->
+        <div class="tree-view active" id="treeView">
           <% chapters.forEach(chapter => { %>
-          <li class="chapter-item">
+          <div class="tree-chapter">
+            <div class="tree-chapter-header">
+              <span class="tree-chapter-number"
+                >Cap. <%= chapter.chapter_number %></span
+              >
+              <span class="tree-chapter-title">
+                <%= chapter.title %> <% if (chapter.is_ending) { %>
+                <span style="color: var(--rose-gold); font-size: 0.85em"
+                  >✨</span
+                >
+                <% } %>
+              </span>
+              <div class="tree-actions">
+                <a
+                  href="/admin/story/<%= story.id %>/chapter/<%= chapter.id %>/choices"
+                  class="btn btn-small btn-primary"
+                  >💭</a
+                >
+                <a
+                  href="/admin/story/<%= story.id %>/chapter/edit/<%= chapter.id %>"
+                  class="btn btn-small btn-secondary"
+                  >✏️</a
+                >
+              </div>
+            </div>
+
+            <% if (chapter.choices && chapter.choices.length > 0) { %> <%
+            chapter.choices.forEach(choice => { %>
+            <div class="tree-choice">
+              <div class="tree-choice-text">↳ <%= choice.choice_text %></div>
+              <div class="tree-choice-target">
+                <% if (choice.next_chapter_id) { %> <% const targetChapter =
+                chapters.find(c => String(c._id) ===
+                String(choice.next_chapter_id)); %> <% if (targetChapter) { %> →
+                <a href="#cap-<%= targetChapter.id %>"
+                  >Cap. <%= targetChapter.chapter_number %>: <%=
+                  targetChapter.title %></a
+                >
+                <% } else { %> → Capítulo não encontrado <% } %> <% } else { %>
+                → 📝 Pendente <% } %>
+              </div>
+            </div>
+            <% }); %> <% } %>
+          </div>
+          <% }); %>
+        </div>
+
+        <!-- VISUALIZAÇÃO EM LISTA (ORIGINAL) -->
+        <ul class="chapter-list list-view" id="listView">
+          <% chapters.forEach(chapter => { %>
+          <li class="chapter-item" id="cap-<%= chapter.id %>">
             <div class="chapter-item-header">
               <h3 class="chapter-item-title">
                 <%= chapter.title %> <% if (chapter.is_ending) { %>
@@ -105,5 +256,40 @@
         <% } %>
       </div>
     </div>
+
+    <script>
+      function toggleView(view) {
+        const treeView = document.getElementById("treeView");
+        const listView = document.getElementById("listView");
+        const btnTree = document.getElementById("btnTree");
+        const btnList = document.getElementById("btnList");
+
+        if (view === "tree") {
+          treeView.classList.add("active");
+          listView.classList.remove("active");
+          btnTree.classList.remove("btn-secondary");
+          btnTree.classList.add("btn-primary");
+          btnList.classList.remove("btn-primary");
+          btnList.classList.add("btn-secondary");
+          localStorage.setItem("chaptersView", "tree");
+        } else {
+          treeView.classList.remove("active");
+          listView.classList.add("active");
+          btnList.classList.remove("btn-secondary");
+          btnList.classList.add("btn-primary");
+          btnTree.classList.remove("btn-primary");
+          btnTree.classList.add("btn-secondary");
+          localStorage.setItem("chaptersView", "list");
+        }
+      }
+
+      // Restaurar visualização preferida
+      window.addEventListener("DOMContentLoaded", () => {
+        const savedView = localStorage.getItem("chaptersView") || "tree";
+        if (savedView === "list") {
+          toggleView("list");
+        }
+      });
+    </script>
   </body>
 </html>

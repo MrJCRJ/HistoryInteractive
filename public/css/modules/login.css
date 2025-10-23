@@ -1,0 +1,91 @@
+/* ============================================
+   LOGIN - Página de autenticação
+   ============================================ */
+
+.login-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.login-container {
+  width: 100%;
+  max-width: 500px;
+  padding: 30px;
+}
+
+.login-box {
+  background: var(--dark-slate);
+  padding: 60px 50px;
+  border-radius: 15px;
+  box-shadow: var(--shadow-deep);
+  position: relative;
+  overflow: hidden;
+  border: 2px solid rgba(201, 169, 97, 0.3);
+}
+
+.login-box::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: var(--gradient-warm);
+}
+
+.login-box h1 {
+  text-align: center;
+  color: var(--off-white);
+  margin-bottom: 15px;
+  font-size: 2.3em;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.login-subtitle {
+  text-align: center;
+  color: var(--golden-accent);
+  margin-bottom: 45px;
+  font-style: italic;
+  font-size: 1.05em;
+}
+
+/* Link secreto */
+.secret-link {
+  position: fixed;
+  bottom: 35px;
+  right: 35px;
+  width: 50px;
+  height: 50px;
+  background: var(--gradient-warm);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  color: transparent;
+  transition: all 0.4s ease;
+  box-shadow: 0 6px 25px rgba(212, 85, 31, 0.4);
+  z-index: 1000;
+  border: 2px solid var(--golden-accent);
+}
+
+.secret-link:hover {
+  background: var(--gradient-dramatic);
+  transform: scale(1.2) rotate(90deg);
+  box-shadow: 0 10px 40px rgba(212, 85, 31, 0.6);
+}
+
+.secret-link::before {
+  content: "🔐";
+  opacity: 0;
+  transition: opacity 0.4s;
+  font-size: 1.4em;
+}
+
+.secret-link:hover::before {
+  opacity: 1;
+}

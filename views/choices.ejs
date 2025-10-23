@@ -81,24 +81,63 @@
             <div class="choice-item-text"><%= choice.choice_text %></div>
             <div class="choice-item-target">
               <% if (choice.next_chapter_id) { %> <% const targetChapter =
-              allChapters.find(c => c.id === choice.next_chapter_id); %> → Cap.
-              <%= targetChapter ? targetChapter.chapter_number : '?' %>: <%=
-              targetChapter ? targetChapter.title : 'Capítulo não encontrado' %>
-              <% } else { %> → Nenhum capítulo definido <% } %>
-            </div>
-            <form
-              method="POST"
-              action="/admin/story/<%= story.id %>/chapter/<%= chapter.id %>/choice/delete/<%= choice.id %>"
-              style="display: inline"
-            >
-              <button
-                type="submit"
-                class="btn btn-small btn-danger"
-                onclick="return confirm('Excluir esta escolha?')"
+              allChapters.find(c => String(c._id) ===
+              String(choice.next_chapter_id)); %> <% if (targetChapter) { %> →
+              <a
+                href="/admin/story/<%= story.id %>/chapter/edit/<%= targetChapter.id %>"
+                style="
+                  color: var(--golden-accent);
+                  text-decoration: none;
+                  font-weight: 600;
+                "
               >
-                Excluir
-              </button>
-            </form>
+                Cap. <%= targetChapter.chapter_number %>: <%=
+                targetChapter.title %>
+              </a>
+              <% } else { %> →
+              <span style="color: #ff6b6b"
+                >Cap. ?: Capítulo não encontrado</span
+              >
+              <% } %> <% } else { %>
+              <span style="color: var(--burnt-orange); font-weight: 600">
+                → 📝 Capítulo pendente
+              </span>
+              <% } %>
+            </div>
+            <div class="choice-item-actions">
+              <% if (!choice.next_chapter_id) { %>
+              <a
+                href="/admin/story/<%= story.id %>/chapter/new-from-choice/<%= choice.id %>"
+                class="btn btn-small btn-success"
+                style="margin-right: 10px"
+              >
+                ✍️ Criar Capítulo
+              </a>
+              <% } else { %> <% const targetChapter = allChapters.find(c =>
+              String(c._id) === String(choice.next_chapter_id)); %> <% if
+              (targetChapter) { %>
+              <a
+                href="/admin/story/<%= story.id %>/chapter/edit/<%= targetChapter.id %>"
+                class="btn btn-small btn-primary"
+                style="margin-right: 10px"
+              >
+                ✏️ Editar Capítulo
+              </a>
+              <% } %> <% } %>
+              <form
+                method="POST"
+                action="/admin/story/<%= story.id %>/chapter/<%= chapter.id %>/choice/delete/<%= choice.id %>"
+                style="display: inline"
+              >
+                <button
+                  type="submit"
+                  class="btn btn-small btn-danger"
+                  onclick="return confirm('Excluir esta escolha?')"
+                >
+                  Excluir
+                </button>
+              </form>
+            </div>
           </li>
           <% }); %>
         </ul>
@@ -136,14 +175,15 @@
             </div>
 
             <div class="form-group">
-              <label for="next_chapter_id">Capítulo de Destino *</label>
+              <label for="next_chapter_id"
+                >Capítulo de Destino (Opcional)</label
+              >
               <select
                 id="next_chapter_id"
                 name="next_chapter_id"
-                required
                 style="width: 100%"
               >
-                <option value="">Selecione um capítulo...</option>
+                <option value="">📝 Criar depois (clicando na escolha)</option>
                 <% allChapters.forEach(ch => { %> <% if (ch.id !== chapter.id) {
                 %>
                 <option value="<%= ch.id %>">
@@ -153,7 +193,8 @@
                 <% } %> <% }); %>
               </select>
               <small style="color: var(--text-light)">
-                Para onde esta escolha levará o leitor?
+                💡 Dica: Deixe vazio e depois clique em "✍️ Criar Capítulo" ao
+                lado da escolha!
               </small>
             </div>
 

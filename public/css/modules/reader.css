@@ -1,0 +1,411 @@
+/* ============================================
+   READER - Página de leitura interativa
+   ============================================ */
+
+.reader-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 60px 30px;
+  min-height: 100vh;
+}
+
+.reader-header {
+  background: var(--dark-slate);
+  padding: 40px 50px;
+  border-radius: 12px 12px 0 0;
+  box-shadow: var(--shadow-intense);
+  margin-bottom: 0;
+  border-bottom: 3px solid var(--burnt-orange);
+}
+
+.reader-story-title {
+  font-size: 2.5em;
+  color: var(--off-white);
+  margin-bottom: 15px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+}
+
+.reader-chapter-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--golden-accent);
+  font-size: 1em;
+  padding-top: 20px;
+  border-top: 1px solid rgba(201, 169, 97, 0.3);
+  font-weight: 600;
+}
+
+.reader-chapter-title {
+  font-size: 1.3em;
+  color: var(--golden-accent);
+  font-weight: 700;
+}
+
+.reader-content {
+  background: var(--paper-white);
+  padding: 60px 70px;
+  box-shadow: var(--shadow-intense);
+  line-height: 2.1;
+  font-size: 1.18em;
+  color: var(--text-primary);
+  text-align: justify;
+  position: relative;
+  border-left: 4px solid var(--burnt-orange);
+}
+
+.reader-content::before {
+  content: "❝";
+  position: absolute;
+  top: 30px;
+  left: 25px;
+  font-size: 8em;
+  color: rgba(212, 85, 31, 0.08);
+  font-family: Georgia, serif;
+  line-height: 1;
+}
+
+.reader-text {
+  white-space: pre-line;
+  margin-bottom: 50px;
+  text-indent: 0;
+  font-weight: 400;
+  letter-spacing: 0.2px;
+}
+
+.reader-text p {
+  margin-bottom: 1.5em;
+}
+
+.reader-choices {
+  background: var(--gradient-dark);
+  padding: 50px;
+  border-radius: 0 0 12px 12px;
+  box-shadow: var(--shadow-intense);
+  margin-top: 0;
+}
+
+.choices-title {
+  text-align: center;
+  font-size: 1.6em;
+  color: var(--golden-accent);
+  margin-bottom: 35px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.choices-title::after {
+  content: "";
+  display: block;
+  width: 80px;
+  height: 3px;
+  background: var(--gradient-warm);
+  margin: 15px auto 0;
+}
+
+.choice-button {
+  display: block;
+  width: 100%;
+  padding: 25px 35px;
+  margin-bottom: 20px;
+  background: var(--dark-slate);
+  border: 2px solid var(--burnt-orange);
+  border-radius: 10px;
+  color: var(--off-white);
+  font-size: 1.15em;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: left;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.choice-button::before {
+  content: "▶";
+  position: absolute;
+  right: 30px;
+  top: 50%;
+  transform: translateY(-50%) translateX(-10px);
+  opacity: 0;
+  transition: all 0.3s ease;
+  font-size: 1.3em;
+  color: var(--burnt-orange);
+}
+
+.choice-button:hover {
+  background: var(--gradient-dramatic);
+  border-color: var(--golden-accent);
+  transform: translateX(10px);
+  box-shadow: 0 10px 35px rgba(212, 85, 31, 0.4);
+}
+
+.choice-button:hover::before {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+
+.ending-message {
+  text-align: center;
+  padding: 60px 40px;
+  background: var(--gradient-dark);
+  border-radius: 12px;
+  margin-top: 40px;
+  box-shadow: var(--shadow-deep);
+  border: 2px solid var(--golden-accent);
+}
+
+.ending-message h3 {
+  font-size: 2.5em;
+  color: var(--golden-accent);
+  margin-bottom: 25px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.ending-message p {
+  font-size: 1.3em;
+  color: var(--off-white);
+  margin-bottom: 40px;
+  line-height: 1.8;
+}
+
+.reader-actions {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  margin-top: 40px;
+  flex-wrap: wrap;
+}
+
+/* Modo imersivo */
+.immersive-mode .reader-header,
+.immersive-mode .reader-actions {
+  display: none;
+}
+
+.immersive-mode .reader-content {
+  font-size: 1.35em;
+  max-width: 750px;
+  margin: 0 auto;
+  padding: 70px 60px;
+  min-height: 100vh;
+  background: #fefefe;
+}
+
+.immersive-toggle {
+  position: fixed;
+  top: 25px;
+  right: 25px;
+  z-index: 100;
+  background: var(--dark-slate);
+  border: 2px solid var(--golden-accent);
+  padding: 14px 25px;
+  border-radius: 10px;
+  box-shadow: var(--shadow-intense);
+  cursor: pointer;
+  color: var(--golden-accent);
+  font-family: inherit;
+  font-size: 0.9em;
+  transition: all 0.3s;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.immersive-toggle:hover {
+  background: var(--gradient-warm);
+  color: white;
+  border-color: white;
+  transform: scale(1.05);
+}
+
+/* ============================================
+   MOBILE READER OPTIMIZATIONS
+   Melhorias específicas para leitura em celular
+   ============================================ */
+
+/* Smartphones (até 768px) - OTIMIZADO PARA LEITURA */
+@media (max-width: 768px) {
+  .reader-container {
+    padding: 20px 0;
+  }
+
+  .reader-header {
+    padding: 30px 20px;
+    border-radius: 0;
+  }
+
+  .reader-story-title {
+    font-size: 1.8em;
+    line-height: 1.3;
+    margin-bottom: 12px;
+  }
+
+  .reader-chapter-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 0.95em;
+  }
+
+  .reader-chapter-title {
+    font-size: 1.1em;
+  }
+
+  /* CONTEÚDO PRINCIPAL - MAXIMIZADO PARA LEITURA */
+  .reader-content {
+    padding: 40px 24px;
+    border-radius: 0;
+    border-left: none;
+    border-top: 4px solid var(--burnt-orange);
+    /* Fonte maior e mais confortável para mobile */
+    font-size: 1.25em;
+    line-height: 1.9;
+    text-align: left;
+  }
+
+  .reader-content::before {
+    display: none; /* Remove aspas decorativas em mobile */
+  }
+
+  .reader-text {
+    margin-bottom: 40px;
+    /* Espaçamento aumentado entre parágrafos */
+    letter-spacing: 0.3px;
+  }
+
+  .reader-text p {
+    margin-bottom: 1.8em;
+  }
+
+  /* ESCOLHAS - BOTÕES GRANDES E TOUCH-FRIENDLY */
+  .reader-choices {
+    padding: 35px 20px;
+    border-radius: 0;
+  }
+
+  .choices-title {
+    font-size: 1.4em;
+    margin-bottom: 25px;
+    letter-spacing: 1px;
+  }
+
+  .choice-button {
+    /* Botões maiores para toque confortável */
+    padding: 22px 20px;
+    font-size: 1.15em;
+    line-height: 1.6;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    /* Remove hover effect em mobile */
+    transform: none;
+  }
+
+  .choice-button:active {
+    background: var(--gradient-dramatic);
+    transform: scale(0.98);
+  }
+
+  .choice-button::before {
+    right: 20px;
+    opacity: 1;
+    transform: translateY(-50%);
+    font-size: 1.1em;
+  }
+
+  .ending-message {
+    padding: 40px 24px;
+    border-radius: 8px;
+    margin-top: 30px;
+  }
+
+  .ending-message h3 {
+    font-size: 1.8em;
+    margin-bottom: 20px;
+  }
+
+  .ending-message p {
+    font-size: 1.15em;
+    line-height: 1.7;
+    margin-bottom: 30px;
+  }
+
+  .reader-actions {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .reader-actions .btn {
+    width: 100%;
+    padding: 18px 24px;
+    font-size: 1.05em;
+  }
+
+  /* Toggle imersivo mobile */
+  .immersive-toggle {
+    top: 15px;
+    right: 15px;
+    padding: 12px 18px;
+    font-size: 0.85em;
+  }
+
+  .immersive-mode .reader-content {
+    font-size: 1.3em;
+    padding: 50px 24px;
+    line-height: 1.95;
+  }
+}
+
+/* Smartphones pequenos (até 480px) - EXTRA OTIMIZADO */
+@media (max-width: 480px) {
+  .reader-content {
+    /* Fonte ainda maior em telas muito pequenas */
+    font-size: 1.28em;
+    line-height: 1.85;
+    padding: 35px 20px;
+  }
+
+  .reader-text p {
+    /* Mais espaço entre parágrafos */
+    margin-bottom: 2em;
+  }
+
+  .choice-button {
+    padding: 20px 18px;
+    font-size: 1.12em;
+  }
+
+  .choices-title {
+    font-size: 1.3em;
+  }
+
+  .immersive-mode .reader-content {
+    font-size: 1.35em;
+    padding: 40px 20px;
+    line-height: 2;
+  }
+}
+
+/* Melhorias para dispositivos touch */
+@media (hover: none) and (pointer: coarse) {
+  .choice-button {
+    /* Aumenta área de toque */
+    min-height: 64px;
+    -webkit-tap-highlight-color: rgba(212, 85, 31, 0.2);
+  }
+
+  .reader-content {
+    /* Desativa seleção de texto acidental */
+    -webkit-user-select: text;
+    user-select: text;
+  }
+}

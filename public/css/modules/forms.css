@@ -1,0 +1,76 @@
+/* ============================================
+   FORMULÁRIOS - Inputs e textareas
+   ============================================ */
+
+.form-group {
+  margin-bottom: 30px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 12px;
+  color: var(--off-white);
+  font-weight: 700;
+  font-size: 0.95em;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 16px 20px;
+  border: 2px solid rgba(201, 169, 97, 0.3);
+  border-radius: 10px;
+  font-size: 1em;
+  font-family: inherit;
+  transition: all 0.3s;
+  background: var(--deep-charcoal);
+  color: var(--off-white);
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: var(--burnt-orange);
+  background: var(--dark-slate);
+  box-shadow: 0 0 0 4px rgba(212, 85, 31, 0.1);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 150px;
+  line-height: 1.7;
+}
+
+.form-group input[type="color"] {
+  height: 60px;
+  cursor: pointer;
+}
+
+.error-message {
+  background: var(--gradient-warm);
+  color: white;
+  padding: 18px 25px;
+  border-radius: 10px;
+  margin-bottom: 30px;
+  text-align: center;
+  box-shadow: 0 6px 20px rgba(139, 30, 30, 0.4);
+  font-weight: 600;
+}
+
+.back-link {
+  display: block;
+  text-align: center;
+  margin-top: 30px;
+  color: var(--golden-accent);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.back-link:hover {
+  color: var(--burnt-orange);
+  text-decoration: underline;
+}

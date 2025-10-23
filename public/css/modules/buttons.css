@@ -1,0 +1,61 @@
+/* ============================================
+   BOTÕES - Sistema unificado
+   ============================================ */
+
+.btn {
+  display: inline-block;
+  padding: 15px 35px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1em;
+  font-family: inherit;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  font-weight: 700;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.btn-primary {
+  background: var(--gradient-warm);
+  color: white;
+}
+
+.btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(212, 85, 31, 0.5);
+}
+
+.btn-secondary {
+  background: var(--dark-slate);
+  color: var(--golden-accent);
+  border: 2px solid var(--golden-accent);
+}
+
+.btn-secondary:hover {
+  background: var(--steel-blue);
+  color: white;
+  border-color: var(--off-white);
+}
+
+.btn-success {
+  background: linear-gradient(135deg, #2d5016 0%, #4a7c2b 100%);
+  color: white;
+}
+
+.btn-danger {
+  background: var(--gradient-warm);
+  color: white;
+}
+
+.btn-small {
+  padding: 10px 20px;
+  font-size: 0.9em;
+}
+
+.btn-large {
+  padding: 18px 45px;
+  font-size: 1.1em;
+}

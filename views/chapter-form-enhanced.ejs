@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= chapter ? 'Editar' : 'Novo' %> Capítulo</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      .quick-tip {
+        background: rgba(201, 169, 97, 0.1);
+        border-left: 4px solid var(--golden-accent);
+        padding: 15px 20px;
+        margin-bottom: 20px;
+        border-radius: 8px;
+      }
+    </style>
+  </head>
+  <body class="admin-page">
+    <div class="admin-container">
+      <header class="admin-header">
+        <h1>✍️ <%= chapter ? 'Editar' : 'Novo' %> Capítulo</h1>
+        <div class="admin-user">
+          <a
+            href="/admin/story/<%= story.id %>/chapters"
+            class="btn btn-small btn-secondary"
+          >
+            ← Voltar aos Capítulos
+          </a>
+        </div>
+      </header>
+
+      <div class="admin-content">
+        <h2><%= story.title %></h2>
+
+        <% if (typeof choiceId !== 'undefined' && choiceId) { %>
+        <div
+          style="
+            background: linear-gradient(135deg, #d4551f 0%, #c93e15 100%);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            border: 2px solid var(--golden-accent);
+          "
+        >
+          <h3 style="color: white; margin: 0 0 10px 0; font-size: 1.3em">
+            🔗 Capítulo vinculado à escolha
+          </h3>
+          <p
+            style="
+              color: rgba(255, 255, 255, 0.95);
+              margin: 0;
+              line-height: 1.6;
+            "
+          >
+            <strong>Escolha de origem:</strong> "<%= choiceText %>"<br />
+            <strong>Capítulo pai:</strong> Cap. <%= sourceChapter.chapter_number
+            %> - <%= sourceChapter.title %><br />
+            <em style="font-size: 0.9em; opacity: 0.9"
+              >Quando você salvar, este capítulo será automaticamente vinculado
+              à escolha acima.</em
+            >
+          </p>
+        </div>
+        <% } %>
+
+        <div class="quick-tip">
+          <strong>💡 Fluxo simplificado:</strong> Salve o capítulo e depois vá
+          em "💭 Gerenciar Escolhas" para adicionar as ramificações. Você pode
+          criar escolhas sem capítulo e depois clicar em "✍️ Criar Capítulo"
+          para vinculá-las!
+        </div>
+
+        <form
+          method="POST"
+          action="/admin/story/<%= story.id %>/chapter/save-with-choices"
+          id="chapterForm"
+        >
+          <% if (chapter) { %>
+          <input type="hidden" name="id" value="<%= chapter.id %>" />
+          <% } %> <% if (typeof choiceId !== 'undefined' && choiceId) { %>
+          <input type="hidden" name="choiceId" value="<%= choiceId %>" />
+          <% } %>
+
+          <div class="form-group">
+            <label for="chapter_number">Número do Capítulo *</label>
+            <input
+              type="number"
+              id="chapter_number"
+              name="chapter_number"
+              value="<%= chapter ? chapter.chapter_number : nextNumber %>"
+              min="1"
+              required
+            />
+            <small style="color: var(--text-light)">
+              Use números sequenciais. Ramificações podem ter o mesmo número.
+            </small>
+          </div>
+
+          <div class="form-group">
+            <label for="title">Título do Capítulo *</label>
+            <input
+              type="text"
+              id="title"
+              name="title"
+              value="<%= chapter ? chapter.title : '' %>"
+              placeholder="Ex: A Decisão que Mudou Tudo"
+              required
+              autofocus
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="content">Narrativa do Capítulo *</label>
+            <textarea
+              id="content"
+              name="content"
+              rows="15"
+              placeholder="Escreva de forma envolvente..."
+              required
+              style="font-size: 1.05em; line-height: 1.8"
+            >
+<%= chapter ? chapter.content : '' %></textarea
+            >
+          </div>
+
+          <div class="form-group">
+            <label
+              style="
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                cursor: pointer;
+              "
+            >
+              <input type="checkbox" id="is_ending" name="is_ending" value="1"
+              <%= chapter && chapter.is_ending ? 'checked' : '' %> style="width:
+              auto;">
+              <span>✨ Este é um capítulo final da história</span>
+            </label>
+            <small
+              style="
+                color: var(--text-light);
+                margin-left: 30px;
+                display: block;
+                margin-top: 5px;
+              "
+            >
+              Se marcado, não precisa adicionar escolhas (história termina
+              aqui).
+            </small>
+          </div>
+
+          <div class="form-group" style="margin-top: 30px">
+            <button type="submit" class="btn btn-success btn-large">
+              💾 Salvar Capítulo
+            </button>
+            <a
+              href="/admin/story/<%= story.id %>/chapters"
+              class="btn btn-secondary btn-large"
+            >
+              Cancelar
+            </a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>
