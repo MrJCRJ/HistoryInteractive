@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Painel Administrativo</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="admin-page">
+    <div class="admin-container">
+      <header class="admin-header">
+        <h1>� Painel do Escritor</h1>
+        <div class="admin-user">
+          <span>Olá, <strong><%= username %></strong></span>
+          <a href="/logout" class="btn btn-small btn-secondary">Sair</a>
+        </div>
+      </header>
+
+      <div class="admin-actions">
+        <a href="/admin/story/new" class="btn btn-success">✍️ Nova História</a>
+        <a href="/" class="btn btn-secondary" target="_blank">👁️ Ver Site</a>
+      </div>
+
+      <div class="admin-content">
+        <h2>Minhas Histórias (<%= stories.length %>)</h2>
+
+        <% if (stories.length === 0) { %>
+        <div class="empty-state">
+          <p>Você ainda não criou nenhuma história.</p>
+          <a href="/admin/story/new" class="btn btn-primary"
+            >Criar primeira história</a
+          >
+        </div>
+        <% } else { %>
+        <div class="stories-admin-grid">
+          <% stories.forEach(story => { %>
+          <div class="story-admin-card">
+            <h3><%= story.title %></h3>
+            <p><%= story.description || 'Sem descrição' %></p>
+            <div class="story-admin-meta">
+              📖 <%= story.chapter_count %> capítulos | <%= story.genre %> | <%=
+              story.status %>
+            </div>
+            <div class="story-admin-actions">
+              <a
+                href="/admin/story/<%= story.id %>/chapters"
+                class="btn btn-small btn-primary"
+              >
+                Gerenciar Capítulos
+              </a>
+              <a
+                href="/admin/story/edit/<%= story.id %>"
+                class="btn btn-small btn-secondary"
+              >
+                Editar
+              </a>
+              <a
+                href="/read/<%= story.id %>"
+                class="btn btn-small btn-secondary"
+                target="_blank"
+              >
+                Ler
+              </a>
+              <form
+                method="POST"
+                action="/admin/story/delete/<%= story.id %>"
+                style="display: inline"
+              >
+                <button
+                  type="submit"
+                  class="btn btn-small btn-danger"
+                  onclick="return confirm('Tem certeza que deseja excluir esta história e todos os seus capítulos?')"
+                >
+                  Excluir
+                </button>
+              </form>
+            </div>
+          </div>
+          <% }); %>
+        </div>
+        <% } %>
+      </div>
+    </div>
+  </body>
+</html>

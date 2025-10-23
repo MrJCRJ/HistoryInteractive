@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - Área Administrativa</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="login-page">
+    <div class="login-container">
+      <div class="login-box">
+        <h1>� Área do Escritor</h1>
+        <p class="login-subtitle">Acesso restrito ao criador de histórias</p>
+
+        <% if (error) { %>
+        <div class="error-message"><%= error %></div>
+        <% } %>
+
+        <form method="POST" action="/login">
+          <div class="form-group">
+            <label for="username">Usuário</label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              required
+              autofocus
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="password">Senha</label>
+            <input type="password" id="password" name="password" required />
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="width: 100%">
+            Entrar
+          </button>
+        </form>
+
+        <a href="/" class="back-link">← Voltar para as histórias</a>
+      </div>
+    </div>
+  </body>
+</html>

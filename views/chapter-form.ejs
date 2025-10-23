@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= chapter ? 'Editar' : 'Novo' %> Capítulo</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="admin-page">
+    <div class="admin-container">
+      <header class="admin-header">
+        <h1>✍️ <%= chapter ? 'Editar' : 'Novo' %> Capítulo</h1>
+        <div class="admin-user">
+          <a
+            href="/admin/story/<%= story.id %>/chapters"
+            class="btn btn-small btn-secondary"
+          >
+            ← Voltar aos Capítulos
+          </a>
+        </div>
+      </header>
+
+      <div class="admin-content">
+        <h2><%= story.title %></h2>
+
+        <form method="POST" action="/admin/story/<%= story.id %>/chapter/save">
+          <% if (chapter) { %>
+          <input type="hidden" name="id" value="<%= chapter.id %>" />
+          <% } %>
+
+          <div class="form-group">
+            <label for="chapter_number">Número do Capítulo *</label>
+            <input
+              type="number"
+              id="chapter_number"
+              name="chapter_number"
+              value="<%= chapter ? chapter.chapter_number : nextNumber %>"
+              min="1"
+              required
+            />
+            <small style="color: var(--text-light)">
+              Use números sequenciais. Ramificações podem ter o mesmo número.
+            </small>
+          </div>
+
+          <div class="form-group">
+            <label for="title">Título do Capítulo *</label>
+            <input
+              type="text"
+              id="title"
+              name="title"
+              value="<%= chapter ? chapter.title : '' %>"
+              placeholder="Ex: A Decisão que Mudou Tudo"
+              required
+              autofocus
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="content">Narrativa do Capítulo *</label>
+            <textarea
+              id="content"
+              name="content"
+              rows="20"
+              placeholder="Escreva de forma envolvente e literária. Use diálogos naturais, cenas detalhadas e emocionantes..."
+              required
+              style="font-size: 1.05em; line-height: 1.8"
+            >
+<%= chapter ? chapter.content : '' %></textarea
+            >
+            <small style="color: var(--text-light)">
+              💡 Dica: Crie tensão, mostre conflitos e termine com uma escolha
+              crucial que impacte a história.
+            </small>
+          </div>
+
+          <div class="form-group">
+            <label
+              style="
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                cursor: pointer;
+              "
+            >
+              <input type="checkbox" id="is_ending" name="is_ending" value="1"
+              <%= chapter && chapter.is_ending ? 'checked' : '' %> style="width:
+              auto;">
+              <span>✨ Este é um capítulo final da história</span>
+            </label>
+            <small
+              style="
+                color: var(--text-light);
+                margin-left: 30px;
+                display: block;
+                margin-top: 5px;
+              "
+            >
+              Marque se este capítulo representa um dos finais possíveis.
+            </small>
+          </div>
+
+          <div class="form-group">
+            <button type="submit" class="btn btn-success btn-large">
+              💾 Salvar e Gerenciar Escolhas
+            </button>
+            <a
+              href="/admin/story/<%= story.id %>/chapters"
+              class="btn btn-secondary btn-large"
+            >
+              Cancelar
+            </a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>

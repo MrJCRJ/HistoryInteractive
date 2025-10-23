@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Historias Interativas Baseadas em Fatos Reais</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <header class="main-header">
+        <h1 class="main-title">Historias Interativas</h1>
+        <p class="main-subtitle">
+          Viva acontecimentos reais e dramaticos onde cada escolha tem
+          consequencias
+        </p>
+      </header>
+
+      <% if (stories.length === 0) { %>
+      <div class="empty-state">
+        <div class="empty-state-icon">&#128218;</div>
+        <p class="empty-state-text">Ainda nao ha historias para explorar...</p>
+        <p class="empty-state-hint">
+          Em breve, narrativas intensas e baseadas em fatos reais chegarao aqui
+        </p>
+      </div>
+      <% } else { %>
+      <div class="stories-grid">
+        <% stories.forEach(function(story) { %>
+        <a href="/read/<%= story.id %>" class="story-card">
+          <div class="story-cover" <% if (story.cover_color) { %>
+            style="background-color: <%- story.cover_color %>" <% } %> >
+            <div class="story-cover-content">
+              <div class="story-icon">&#128214;</div>
+              <h2 class="story-cover-title"><%= story.title %></h2>
+            </div>
+          </div>
+          <div class="story-info">
+            <span class="story-genre"><%= story.genre %></span>
+            <h3 class="story-title"><%= story.title %></h3>
+            <p class="story-description"><%= story.description %></p>
+            <div class="story-meta">
+              <div class="story-chapters">
+                <span>&#128209;</span>
+                <span><%= story.chapter_count %> capitulos</span>
+              </div>
+              <div class="story-status"><%= story.status %></div>
+            </div>
+          </div>
+        </a>
+        <% }); %>
+      </div>
+      <% } %>
+    </div>
+
+    <a
+      href="/secret-admin-login"
+      class="secret-link"
+      title="Area administrativa"
+      >.</a
+    >
+
+    <script>
+      let hCount = 0;
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "h" || e.key === "H") {
+          hCount++;
+          if (hCount >= 10) {
+            window.location.href = "/secret-admin-login";
+          }
+        } else {
+          hCount = 0;
+        }
+      });
+    </script>
+  </body>
+</html>

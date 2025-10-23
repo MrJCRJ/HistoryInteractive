@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Capítulos - <%= story.title %></title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="admin-page">
+    <div class="admin-container">
+      <header class="admin-header">
+        <h1>📖 Capítulos: <%= story.title %></h1>
+        <div class="admin-user">
+          <a href="/admin" class="btn btn-small btn-secondary"
+            >← Voltar ao Painel</a
+          >
+        </div>
+      </header>
+
+      <div class="admin-actions">
+        <a
+          href="/admin/story/<%= story.id %>/chapter/new"
+          class="btn btn-success"
+        >
+          ✍️ Novo Capítulo
+        </a>
+        <a href="/admin/story/edit/<%= story.id %>" class="btn btn-secondary">
+          ⚙️ Editar História
+        </a>
+        <a
+          href="/read/<%= story.id %>"
+          class="btn btn-secondary"
+          target="_blank"
+        >
+          👁️ Ler História
+        </a>
+      </div>
+
+      <div class="admin-content">
+        <h2>Capítulos (<%= chapters.length %>)</h2>
+
+        <% if (chapters.length === 0) { %>
+        <div class="empty-state">
+          <p>Esta história ainda não tem capítulos.</p>
+          <a
+            href="/admin/story/<%= story.id %>/chapter/new"
+            class="btn btn-primary"
+          >
+            Criar primeiro capítulo
+          </a>
+        </div>
+        <% } else { %>
+        <ul class="chapter-list">
+          <% chapters.forEach(chapter => { %>
+          <li class="chapter-item">
+            <div class="chapter-item-header">
+              <h3 class="chapter-item-title">
+                <%= chapter.title %> <% if (chapter.is_ending) { %>
+                <span style="color: var(--rose-gold); font-size: 0.8em"
+                  >✨ (Final)</span
+                >
+                <% } %>
+              </h3>
+              <span class="chapter-item-number"
+                >Cap. <%= chapter.chapter_number %></span
+              >
+            </div>
+            <p style="color: var(--text-medium); margin-top: 10px">
+              <%= chapter.content.substring(0, 150) %>...
+            </p>
+            <div class="chapter-item-actions">
+              <a
+                href="/admin/story/<%= story.id %>/chapter/<%= chapter.id %>/choices"
+                class="btn btn-small btn-primary"
+              >
+                Gerenciar Escolhas
+              </a>
+              <a
+                href="/admin/story/<%= story.id %>/chapter/edit/<%= chapter.id %>"
+                class="btn btn-small btn-secondary"
+              >
+                Editar
+              </a>
+              <form
+                method="POST"
+                action="/admin/story/<%= story.id %>/chapter/delete/<%= chapter.id %>"
+                style="display: inline"
+              >
+                <button
+                  type="submit"
+                  class="btn btn-small btn-danger"
+                  onclick="return confirm('Tem certeza que deseja excluir este capítulo?')"
+                >
+                  Excluir
+                </button>
+              </form>
+            </div>
+          </li>
+          <% }); %>
+        </ul>
+        <% } %>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Escolhas - <%= chapter.title %></title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="admin-page">
+    <div class="admin-container">
+      <header class="admin-header">
+        <h1>💭 Escolhas Interativas</h1>
+        <div class="admin-user">
+          <a
+            href="/admin/story/<%= story.id %>/chapters"
+            class="btn btn-small btn-secondary"
+          >
+            ← Voltar aos Capítulos
+          </a>
+        </div>
+      </header>
+
+      <div class="admin-content">
+        <h2>Capítulo <%= chapter.chapter_number %>: <%= chapter.title %></h2>
+        <p
+          style="
+            color: var(--text-medium);
+            margin-bottom: 30px;
+            font-style: italic;
+          "
+        >
+          <%= story.title %>
+        </p>
+
+        <div
+          style="
+            background: var(--deep-charcoal);
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            border-left: 4px solid var(--burnt-orange);
+          "
+        >
+          <h3 style="color: var(--golden-accent); margin-bottom: 15px">
+            ⚡ Como funcionam as escolhas?
+          </h3>
+          <p style="color: #b0b0a8; line-height: 1.6">
+            Ao final deste capítulo, o leitor verá botões com as escolhas que
+            você criar abaixo.
+            <strong>Cada escolha deve ter consequências reais</strong> e levar a
+            caminhos diferentes na narrativa. <br /><br />
+            <strong>💡 Importante:</strong> Se este for um capítulo final, não
+            adicione escolhas. Se não for final, adicione pelo menos 2 escolhas
+            significativas que alterem o rumo da história.
+          </p>
+        </div>
+
+        <h3 style="margin-bottom: 20px; color: var(--deep-rose)">
+          Escolhas Atuais (<%= choices.length %>)
+        </h3>
+
+        <% if (choices.length === 0) { %>
+        <p
+          style="
+            color: var(--text-medium);
+            font-style: italic;
+            margin-bottom: 30px;
+          "
+        >
+          Nenhuma escolha criada ainda. Adicione escolhas para criar
+          ramificações na história.
+        </p>
+        <% } else { %>
+        <ul class="choices-list" style="margin-bottom: 30px">
+          <% choices.forEach(choice => { %>
+          <li class="choice-item">
+            <div class="choice-item-text"><%= choice.choice_text %></div>
+            <div class="choice-item-target">
+              <% if (choice.next_chapter_id) { %> <% const targetChapter =
+              allChapters.find(c => c.id === choice.next_chapter_id); %> → Cap.
+              <%= targetChapter ? targetChapter.chapter_number : '?' %>: <%=
+              targetChapter ? targetChapter.title : 'Capítulo não encontrado' %>
+              <% } else { %> → Nenhum capítulo definido <% } %>
+            </div>
+            <form
+              method="POST"
+              action="/admin/story/<%= story.id %>/chapter/<%= chapter.id %>/choice/delete/<%= choice.id %>"
+              style="display: inline"
+            >
+              <button
+                type="submit"
+                class="btn btn-small btn-danger"
+                onclick="return confirm('Excluir esta escolha?')"
+              >
+                Excluir
+              </button>
+            </form>
+          </li>
+          <% }); %>
+        </ul>
+        <% } %>
+
+        <div
+          style="
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            border: 2px solid var(--border-light);
+          "
+        >
+          <h3 style="margin-bottom: 20px; color: var(--deep-rose)">
+            ➕ Adicionar Nova Escolha
+          </h3>
+
+          <form
+            method="POST"
+            action="/admin/story/<%= story.id %>/chapter/<%= chapter.id %>/choice/add"
+          >
+            <div class="form-group">
+              <label for="choice_text">Texto da Escolha *</label>
+              <input
+                type="text"
+                id="choice_text"
+                name="choice_text"
+                placeholder="Ex: Aceitar o convite dele"
+                required
+                style="width: 100%"
+              />
+              <small style="color: var(--text-light)">
+                Este é o texto que aparecerá no botão para o leitor.
+              </small>
+            </div>
+
+            <div class="form-group">
+              <label for="next_chapter_id">Capítulo de Destino *</label>
+              <select
+                id="next_chapter_id"
+                name="next_chapter_id"
+                required
+                style="width: 100%"
+              >
+                <option value="">Selecione um capítulo...</option>
+                <% allChapters.forEach(ch => { %> <% if (ch.id !== chapter.id) {
+                %>
+                <option value="<%= ch.id %>">
+                  Cap. <%= ch.chapter_number %>: <%= ch.title %> <%=
+                  ch.is_ending ? '✨ (Final)' : '' %>
+                </option>
+                <% } %> <% }); %>
+              </select>
+              <small style="color: var(--text-light)">
+                Para onde esta escolha levará o leitor?
+              </small>
+            </div>
+
+            <div class="form-group">
+              <label for="order_number">Ordem de Exibição</label>
+              <input
+                type="number"
+                id="order_number"
+                name="order_number"
+                value="<%= choices.length %>"
+                min="0"
+                style="width: 150px"
+              />
+              <small style="color: var(--text-light)">
+                Números menores aparecem primeiro.
+              </small>
+            </div>
+
+            <button type="submit" class="btn btn-success">
+              ➕ Adicionar Escolha
+            </button>
+          </form>
+        </div>
+
+        <div style="margin-top: 30px">
+          <a
+            href="/admin/story/<%= story.id %>/chapters"
+            class="btn btn-primary btn-large"
+          >
+            ✅ Concluído - Voltar aos Capítulos
+          </a>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

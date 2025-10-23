@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= story.title %> - Leitura Interativa</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="reader-container">
+      <div class="reader-header">
+        <h1 class="reader-story-title"><%= story.title %></h1>
+        <div class="reader-chapter-info">
+          <span class="reader-chapter-title"
+            >Capítulo <%= chapter.chapter_number %>: <%= chapter.title %></span
+          >
+          <span><%= story.genre %></span>
+        </div>
+      </div>
+
+      <div class="reader-content">
+        <div class="reader-text"><%= chapter.content %></div>
+      </div>
+
+      <% if (chapter.is_ending) { %>
+      <div class="ending-message">
+        <h3>⚡ FIM DESTA JORNADA</h3>
+        <p>Suas escolhas determinaram este desfecho...</p>
+        <div class="reader-actions">
+          <form
+            method="POST"
+            action="/read/<%= story.id %>/restart"
+            style="display: inline"
+          >
+            <button type="submit" class="btn btn-primary btn-large">
+              🔄 Recomeçar com Novas Escolhas
+            </button>
+          </form>
+          <a href="/" class="btn btn-secondary btn-large">
+            📚 Explorar Outras Histórias
+          </a>
+        </div>
+      </div>
+      <% } else if (choices.length > 0) { %>
+      <div class="reader-choices">
+        <h3 class="choices-title">Sua Decisão</h3>
+        <% choices.forEach(choice => { %>
+        <form method="POST" action="/read/<%= story.id %>/choice">
+          <input
+            type="hidden"
+            name="nextChapterId"
+            value="<%= choice.next_chapter_id %>"
+          />
+          <button type="submit" class="choice-button">
+            <%= choice.choice_text %>
+          </button>
+        </form>
+        <% }); %>
+      </div>
+      <% } else { %>
+      <div
+        class="ending-message"
+        style="
+          background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
+          border: 2px solid var(--burnt-orange);
+        "
+      >
+        <h3 style="color: var(--golden-accent)">
+          🚧 CAPÍTULO EM DESENVOLVIMENTO
+        </h3>
+        <p style="color: var(--text-light); font-size: 1.1em; margin: 20px 0">
+          Esta parte da história ainda está sendo escrita pelo autor.<br />
+          Volte em breve para descobrir como a narrativa continua...
+        </p>
+        <div class="reader-actions" style="margin-top: 30px">
+          <form
+            method="POST"
+            action="/read/<%= story.id %>/restart"
+            style="display: inline"
+          >
+            <button type="submit" class="btn btn-primary btn-large">
+              🔄 Recomeçar e Explorar Outros Caminhos
+            </button>
+          </form>
+          <a href="/" class="btn btn-secondary btn-large">
+            📚 Ver Outras Histórias
+          </a>
+        </div>
+      </div>
+      <% } %> <% if (!chapter.is_ending) { %>
+      <div class="reader-actions">
+        <form
+          method="POST"
+          action="/read/<%= story.id %>/restart"
+          style="display: inline"
+        >
+          <button type="submit" class="btn btn-secondary btn-small">
+            🔄 Recomeçar
+          </button>
+        </form>
+        <a href="/" class="btn btn-secondary btn-small">← Voltar</a>
+      </div>
+      <% } %>
+    </div>
+
+    <button
+      class="immersive-toggle"
+      onclick="document.body.classList.toggle('immersive-mode')"
+    >
+      📖 Modo Foco
+    </button>
+  </body>
+</html>

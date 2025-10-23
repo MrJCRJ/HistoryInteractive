@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= story ? 'Editar' : 'Nova' %> História</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;900&display=swap" rel="stylesheet">
+</head>
+<body class="admin-page">
+  <div class="admin-container">
+    <header class="admin-header">
+      <h1>✍️ <%= story ? 'Editar' : 'Nova' %> História</h1>
+      <div class="admin-user">
+        <a href="/admin" class="btn btn-small btn-secondary">← Voltar</a>
+      </div>
+    </header>
+
+    <div class="admin-content">
+      <form method="POST" action="/admin/story/save">
+        <% if (story) { %>
+          <input type="hidden" name="id" value="<%= story.id %>">
+        <% } %>
+
+        <div class="form-group">
+          <label for="title">Título da História *</label>
+          <input 
+            type="text" 
+            id="title" 
+            name="title" 
+            value="<%= story ? story.title : '' %>"
+            placeholder="Ex: O Dilema Impossível"
+            required 
+            autofocus>
+        </div>
+
+        <div class="form-group">
+          <label for="description">Sinopse / Contexto</label>
+          <textarea 
+            id="description" 
+            name="description" 
+            rows="4"
+            placeholder="Descreva o contexto da história baseada em acontecimentos reais..."
+            ><%= story ? story.description : '' %></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="genre">Gênero / Tema</label>
+          <select id="genre" name="genre">
+            <option value="Drama Real" <%= story && story.genre === 'Drama Real' ? 'selected' : '' %>>
+              Drama Real
+            </option>
+            <option value="Crime e Justiça" <%= story && story.genre === 'Crime e Justiça' ? 'selected' : '' %>>
+              Crime e Justiça
+            </option>
+            <option value="Suspense Psicológico" <%= story && story.genre === 'Suspense Psicológico' ? 'selected' : '' %>>
+              Suspense Psicológico
+            </option>
+            <option value="Dilema Moral" <%= story && story.genre === 'Dilema Moral' ? 'selected' : '' %>>
+              Dilema Moral
+            </option>
+            <option value="Conflito Familiar" <%= story && story.genre === 'Conflito Familiar' ? 'selected' : '' %>>
+              Conflito Familiar
+            </option>
+            <option value="Decisões Profissionais" <%= story && story.genre === 'Decisões Profissionais' ? 'selected' : '' %>>
+              Decisões Profissionais
+            </option>
+            <option value="Sobrevivência" <%= story && story.genre === 'Sobrevivência' ? 'selected' : '' %>>
+              Sobrevivência
+            </option>
+            <option value="Mistério Real" <%= story && story.genre === 'Mistério Real' ? 'selected' : '' %>>
+              Mistério Real
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="cover_color">Cor do Card (Escolha tom sóbrio)</label>
+          <input 
+            type="color" 
+            id="cover_color" 
+            name="cover_color" 
+            value="<%= story ? story.cover_color : '#2d2d2d' %>">
+        </div>
+
+        <div class="form-group">
+          <label for="status">Status</label>
+          <select id="status" name="status">
+            <option value="Em andamento" <%= story && story.status === 'Em andamento' ? 'selected' : '' %>>
+              Em andamento
+            </option>
+            <option value="Completa" <%= story && story.status === 'Completa' ? 'selected' : '' %>>
+              Completa
+            </option>
+            <option value="Em revisão" <%= story && story.status === 'Em revisão' ? 'selected' : '' %>>
+              Em revisão
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <button type="submit" class="btn btn-success btn-large">
+            💾 Salvar e Gerenciar Capítulos
+          </button>
+          <a href="/admin" class="btn btn-secondary btn-large">Cancelar</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</body>
+</html>
