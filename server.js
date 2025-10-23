@@ -15,16 +15,59 @@ const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
 const SESSION_SECRET = process.env.SESSION_SECRET || 'change-this-secret-in-production';
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://mrjociriju_db_user:5BhRGBe2H9x4njC3@cluster0.kuihnel.mongodb.net/?appName=Cluster0';
 
+// Logs de ambiente (útil para debug em produção)
+console.log('\n🚀 INICIANDO SERVIDOR - LOGS DE AMBIENTE');
+console.log('='.repeat(60));
+console.log(`📍 NODE_ENV: ${process.env.NODE_ENV || 'development'}`);
+console.log(`🔌 PORT: ${PORT}`);
+console.log(`👤 ADMIN_USERNAME: ${ADMIN_USERNAME}`);
+console.log(`🔐 SESSION_SECRET está definido: ${SESSION_SECRET ? 'Sim ✅' : 'Não ❌'}`);
+console.log(`🗄️  MONGODB_URI está definido: ${MONGODB_URI ? 'Sim ✅' : 'Não ❌'}`);
+console.log(`🗄️  Database name: history_interactive`);
+console.log('='.repeat(60));
+console.log('\n🔄 Tentando conectar ao MongoDB Atlas...\n');
+
+// Eventos do Mongoose para monitoramento
+mongoose.connection.on('connecting', () => {
+  console.log('⏳ Mongoose: Conectando ao MongoDB...');
+});
+
+mongoose.connection.on('connected', () => {
+  console.log('✅ Mongoose: Conexão estabelecida com sucesso!');
+});
+
+mongoose.connection.on('disconnected', () => {
+  console.warn('⚠️  Mongoose: Desconectado do MongoDB');
+});
+
+mongoose.connection.on('error', (err) => {
+  console.error('❌ Mongoose Error:', err);
+});
+
 // Conectar ao MongoDB
 mongoose.connect(MONGODB_URI, {
-  dbName: 'history_interactive'
+  dbName: 'history_interactive',
+  serverSelectionTimeoutMS: 5000,
+  socketTimeoutMS: 45000,
 })
   .then(() => {
-    console.log('📚 Conectado ao MongoDB Atlas');
+    console.log('📚 MongoDB Atlas conectado com sucesso!');
+    console.log(`📦 Collections disponíveis serão criadas automaticamente\n`);
     initDatabase();
   })
   .catch((err) => {
-    console.error('❌ Erro ao conectar ao MongoDB:', err);
+    console.error('\n❌ ERRO CRÍTICO AO CONECTAR AO MONGODB:');
+    console.error('='.repeat(60));
+    console.error('Mensagem:', err.message);
+    console.error('Código:', err.code);
+    console.error('Nome:', err.name);
+    console.error('='.repeat(60));
+    console.error('\n💡 Possíveis soluções:');
+    console.error('1. Verifique se o IP está na whitelist do MongoDB Atlas');
+    console.error('2. Verifique se a senha está correta (sem caracteres especiais não codificados)');
+    console.error('3. Verifique se o cluster está ativo');
+    console.error('4. Tente acessar: https://cloud.mongodb.com/');
+    console.error('\n');
     process.exit(1);
   });
 
@@ -82,24 +125,35 @@ const ReadingProgress = mongoose.model('ReadingProgress', ReadingProgressSchema)
 
 // Inicializar banco de dados
 async function initDatabase() {
+  console.log('\n🔧 Inicializando banco de dados...');
   try {
+    // Verificar conexão
+    const collections = await mongoose.connection.db.listCollections().toArray();
+    console.log(`📋 Collections existentes: ${collections.length > 0 ? collections.map(c => c.name).join(', ') : 'Nenhuma (será criada automaticamente)'}`);
+
     // Criar usuário padrão se não existir
+    console.log(`\n🔍 Verificando usuário admin...`);
     const existingUser = await User.findOne({ username: ADMIN_USERNAME });
 
     if (!existingUser) {
+      console.log('⏳ Criando usuário admin...');
       const hashedPassword = await bcrypt.hash(ADMIN_PASSWORD, 10);
       await User.create({
         username: ADMIN_USERNAME,
         password: hashedPassword
       });
-      console.log('✅ Usuário padrão criado!');
+      console.log('✅ Usuário padrão criado com sucesso!');
       console.log(`   👤 Username: ${ADMIN_USERNAME}`);
       console.log(`   🔑 Password: ${ADMIN_PASSWORD}`);
     } else {
-      console.log('✅ Usuário admin já existe');
+      console.log(`✅ Usuário admin já existe (ID: ${existingUser._id})`);
     }
+
+    console.log('\n✅ Banco de dados inicializado com sucesso!\n');
   } catch (err) {
-    console.error('Erro ao inicializar banco de dados:', err);
+    console.error('\n❌ ERRO ao inicializar banco de dados:');
+    console.error('Detalhes:', err.message);
+    console.error('Stack:', err.stack);
   }
 }
 
@@ -109,6 +163,14 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
+// Middleware de logging de requisições (útil para debug em produção)
+app.use((req, res, next) => {
+  const timestamp = new Date().toISOString();
+  console.log(`[${timestamp}] ${req.method} ${req.path} - IP: ${req.ip || req.connection.remoteAddress}`);
+  next();
+});
+
 app.use(session({
   secret: SESSION_SECRET,
   resave: false,
@@ -122,9 +184,12 @@ app.use(session({
 
 // Middleware de autenticação
 function isAuthenticated(req, res, next) {
+  const timestamp = new Date().toISOString();
   if (req.session.userId) {
+    console.log(`[${timestamp}] 🔓 Acesso autorizado - User: ${req.session.username} (${req.session.userId})`);
     next();
   } else {
+    console.log(`[${timestamp}] 🔒 Acesso negado - Redirecionando para login`);
     res.redirect('/secret-admin-login');
   }
 }
@@ -298,34 +363,56 @@ app.get('/secret-admin-login', (req, res) => {
 });
 
 app.post('/login', async (req, res) => {
+  const timestamp = new Date().toISOString();
   try {
     const { username, password } = req.body;
 
-    console.log(`[LOGIN] Tentativa de login - Username: ${username}`);
+    console.log(`\n[${timestamp}] 🔐 LOGIN - Nova tentativa`);
+    console.log(`   👤 Username fornecido: "${username}"`);
+    console.log(`   🔑 Senha fornecida: ${password ? '***' + password.slice(-2) : 'vazia'}`);
+    console.log(`   📍 IP: ${req.ip || req.connection.remoteAddress}`);
 
+    if (!username || !password) {
+      console.log(`[LOGIN] ❌ Credenciais vazias`);
+      return res.render('login', { error: 'Por favor, preencha usuário e senha' });
+    }
+
+    console.log(`[LOGIN] 🔍 Buscando usuário no MongoDB...`);
     const user = await User.findOne({ username });
 
     if (!user) {
-      console.log(`[LOGIN] Usuário não encontrado: ${username}`);
+      console.log(`[LOGIN] ❌ Usuário não encontrado: "${username}"`);
+      console.log(`[LOGIN] 💡 Dica: Verifique se o usuário admin foi criado corretamente`);
       return res.render('login', { error: 'Usuário ou senha inválidos' });
     }
 
-    console.log(`[LOGIN] Usuário encontrado, verificando senha...`);
+    console.log(`[LOGIN] ✅ Usuário encontrado no banco`);
+    console.log(`   📝 ID: ${user._id}`);
+    console.log(`   👤 Username: ${user.username}`);
+    console.log(`   🔐 Hash da senha armazenada: ${user.password.substring(0, 15)}...`);
 
+    console.log(`[LOGIN] 🔓 Comparando senhas com bcrypt...`);
     const result = await bcrypt.compare(password, user.password);
 
     if (result) {
-      console.log(`[LOGIN] ✅ Login bem-sucedido para: ${username}`);
+      console.log(`[LOGIN] ✅✅✅ Login bem-sucedido para: ${username}`);
+      console.log(`[LOGIN] 🎫 Criando sessão...`);
       req.session.userId = user._id.toString();
       req.session.username = user.username;
+      console.log(`[LOGIN] 🎫 Session ID: ${req.session.id}`);
+      console.log(`[LOGIN] ↪️  Redirecionando para /admin\n`);
       res.redirect('/admin');
     } else {
       console.log(`[LOGIN] ❌ Senha incorreta para: ${username}`);
+      console.log(`[LOGIN] 💡 Senha fornecida não corresponde ao hash armazenado\n`);
       res.render('login', { error: 'Usuário ou senha inválidos' });
     }
   } catch (err) {
-    console.error('[LOGIN] Erro:', err);
-    res.render('login', { error: 'Erro ao processar login' });
+    console.error(`\n[${timestamp}] ❌ ERRO CRÍTICO NO LOGIN:`);
+    console.error('   Mensagem:', err.message);
+    console.error('   Stack:', err.stack);
+    console.error('');
+    res.render('login', { error: 'Erro ao processar login. Verifique os logs do servidor.' });
   }
 });
 
@@ -683,10 +770,65 @@ app.post('/admin/story/:storyId/chapter/:chapterId/choice/delete/:choiceId', isA
   }
 });
 
+// ============================================
+// TRATAMENTO DE ERROS GLOBAL
+// ============================================
+
+// Capturar erros 404
+app.use((req, res) => {
+  console.log(`❌ 404 - Rota não encontrada: ${req.method} ${req.path}`);
+  res.status(404).send(`
+    <!DOCTYPE html>
+    <html>
+      <head><title>404 - Página não encontrada</title></head>
+      <body style="font-family: Arial; padding: 50px; text-align: center;">
+        <h1>❌ Página não encontrada</h1>
+        <p>A rota <code>${req.path}</code> não existe.</p>
+        <a href="/">← Voltar para página inicial</a>
+      </body>
+    </html>
+  `);
+});
+
+// Capturar erros gerais
+app.use((err, req, res, next) => {
+  const timestamp = new Date().toISOString();
+  console.error(`\n[${timestamp}] ❌ ERRO NO SERVIDOR:`);
+  console.error('URL:', req.method, req.path);
+  console.error('Mensagem:', err.message);
+  console.error('Stack:', err.stack);
+  console.error('');
+
+  res.status(500).send(`
+    <!DOCTYPE html>
+    <html>
+      <head><title>500 - Erro no Servidor</title></head>
+      <body style="font-family: Arial; padding: 50px; text-align: center;">
+        <h1>⚠️ Erro no Servidor</h1>
+        <p>Ocorreu um erro ao processar sua requisição.</p>
+        <p><small>${process.env.NODE_ENV === 'development' ? err.message : 'Verifique os logs do servidor'}</small></p>
+        <a href="/">← Voltar para página inicial</a>
+      </body>
+    </html>
+  `);
+});
+
 // Iniciar servidor
 app.listen(PORT, () => {
-  console.log(`\n🌟 Servidor de Histórias Interativas rodando!`);
+  console.log('\n' + '='.repeat(70));
+  console.log('🌟 SERVIDOR DE HISTÓRIAS INTERATIVAS INICIADO COM SUCESSO!');
+  console.log('='.repeat(70));
+  console.log(`📍 Ambiente: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`🚀 Porta: ${PORT}`);
   console.log(`📖 Página principal: http://localhost:${PORT}`);
   console.log(`🔐 Área administrativa: http://localhost:${PORT}/secret-admin-login`);
-  console.log(`👤 Credenciais: ${ADMIN_USERNAME} / ${ADMIN_PASSWORD}\n`);
+  console.log(`👤 Credenciais padrão: ${ADMIN_USERNAME} / ${ADMIN_PASSWORD}`);
+  console.log(`🗄️  MongoDB: ${mongoose.connection.readyState === 1 ? 'Conectado ✅' : 'Desconectado ❌'}`);
+  console.log(`🗄️  Database: history_interactive`);
+  console.log('='.repeat(70));
+  console.log('\n💡 Para testar o login:');
+  console.log(`   1. Acesse: http://localhost:${PORT}/secret-admin-login`);
+  console.log(`   2. Use: ${ADMIN_USERNAME} / ${ADMIN_PASSWORD}`);
+  console.log(`   3. Ou pressione 'h' 10x na página inicial\n`);
+  console.log('📊 Logs detalhados estão ativados - Monitorando requisições...\n');
 });
