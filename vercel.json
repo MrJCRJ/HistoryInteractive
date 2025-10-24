@@ -2,17 +2,14 @@
   "version": 2,
   "builds": [
     {
-      "src": "server-fastify.js",
+      "src": "index.js",
       "use": "@vercel/node"
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "server-fastify.js"
+      "dest": "index.js"
     }
-  ],
-  "env": {
-    "NODE_ENV": "production"
-  }
+  ]
 }
