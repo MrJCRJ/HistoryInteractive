@@ -4,14 +4,18 @@
  */
 
 require('dotenv').config();
-const fastify = require('fastify')({ logger: false });
 const path = require('path');
 const { connectDatabase, initDatabase } = require('./src/config/database');
 
 const SESSION_SECRET = process.env.SESSION_SECRET || 'change-this-secret-in-production';
 
-// Build Fastify app
+let app;
+let isInitialized = false;
+
+// Build Fastify app (executa apenas uma vez)
 async function buildApp() {
+  const fastify = require('fastify')({ logger: false });
+
   // View engine (EJS)
   await fastify.register(require('@fastify/view'), {
     engine: {
@@ -96,36 +100,37 @@ async function buildApp() {
     `);
   });
 
-  // Conectar ao banco de dados
-  await connectDatabase();
-  await initDatabase();
-
   return fastify;
 }
 
 // Para Vercel serverless
-let app;
-let isReady = false;
-
 module.exports = async (req, res) => {
   try {
+    // Inicializar app apenas uma vez
     if (!app) {
       console.log('🔧 Inicializando aplicação Fastify para Vercel...');
       app = await buildApp();
-      isReady = false;
-    }
-
-    if (!isReady) {
       await app.ready();
-      isReady = true;
-      console.log('✅ Aplicação pronta!');
+      console.log('✅ Fastify pronto!');
     }
 
-    // Injetar requisição no Fastify
+    // Conectar ao banco apenas uma vez
+    if (!isInitialized) {
+      console.log('🔧 Conectando ao MongoDB...');
+      await connectDatabase();
+      await initDatabase();
+      isInitialized = true;
+      console.log('✅ MongoDB conectado!');
+    }
+
+    // Processar requisição
     app.routing(req, res);
   } catch (error) {
     console.error('❌ Erro no handler Vercel:', error);
     res.statusCode = 500;
-    res.end('Erro interno do servidor');
+    res.end(JSON.stringify({ 
+      error: 'Erro interno do servidor',
+      message: error.message 
+    }));
   }
 };
