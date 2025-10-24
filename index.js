@@ -128,9 +128,9 @@ module.exports = async (req, res) => {
   } catch (error) {
     console.error('❌ Erro no handler Vercel:', error);
     res.statusCode = 500;
-    res.end(JSON.stringify({ 
+    res.end(JSON.stringify({
       error: 'Erro interno do servidor',
-      message: error.message 
+      message: error.message
     }));
   }
 };
