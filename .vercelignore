@@ -1,0 +1,40 @@
+# Ignorar arquivos desnecessários no deploy Vercel
+
+# Documentação
+README.md
+README-v2.md
+MIGRATION-GUIDE.md
+PERFORMANCE.md
+QUICKSTART.txt
+SUMMARY.md
+CSS-MODULAR.md
+VERCEL-DEPLOY.md
+
+# Git
+.git
+.gitignore
+.github
+
+# Ambiente local
+.env
+.env.local
+
+# Node
+node_modules
+
+# Desenvolvimento
+nodemon.json
+
+# Logs
+*.log
+npm-debug.log*
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode
+.idea
+*.swp
+*.swo
