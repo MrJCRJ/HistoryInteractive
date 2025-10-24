@@ -45,8 +45,13 @@ async function publicRoutes(fastify, options) {
       const storyId = request.params.storyId;
       const sessionId = request.session.sessionId;
 
+      console.log('\n📚 [READ] Carregando capítulo:');
+      console.log('   Story ID:', storyId);
+      console.log('   Session ID:', sessionId);
+
       const story = await Story.findById(storyId);
       if (!story) {
+        console.log('   ❌ História não encontrada');
         return reply.redirect('/');
       }
 
@@ -57,14 +62,21 @@ async function publicRoutes(fastify, options) {
         story_id: storyId
       });
 
+      console.log('   📊 Progresso encontrado:', progress ? {
+        current_chapter_id: progress.current_chapter_id,
+        last_read: progress.last_read
+      } : 'Nenhum progresso');
+
       let chapter;
 
       if (progress) {
         chapter = await Chapter.findById(progress.current_chapter_id);
+        console.log('   📖 Capítulo do progresso:', chapter ? `${chapter.chapter_number} - ${chapter.title}` : 'Não encontrado');
       }
 
       if (!chapter) {
         chapter = await Chapter.findOne({ story_id: storyId }).sort({ chapter_number: 1 });
+        console.log('   📖 Primeiro capítulo:', chapter ? `${chapter.chapter_number} - ${chapter.title}` : 'Não encontrado');
 
         if (!chapter) {
           return reply.send('Esta história ainda não tem capítulos.');
@@ -74,6 +86,10 @@ async function publicRoutes(fastify, options) {
       chapter.id = chapter._id;
 
       const choices = await Choice.find({ chapter_id: chapter._id }).sort({ order_number: 1 });
+      console.log('   🔀 Escolhas encontradas:', choices.length);
+      choices.forEach((choice, idx) => {
+        console.log(`      ${idx + 1}. "${choice.choice_text}" → Chapter ID: ${choice.next_chapter_id}`);
+      });
 
       await ReadingProgress.findOneAndUpdate(
         { session_id: sessionId, story_id: story._id },
@@ -84,9 +100,11 @@ async function publicRoutes(fastify, options) {
         { upsert: true, new: true }
       );
 
+      console.log('   ✅ Renderizando reader.ejs\n');
+
       return reply.view('reader', { story, chapter, choices });
     } catch (err) {
-      console.error(err);
+      console.error('   ❌ Erro:', err);
       return reply.redirect('/');
     }
   });
@@ -98,11 +116,18 @@ async function publicRoutes(fastify, options) {
       const nextChapterId = request.body.nextChapterId;
       const sessionId = request.session.sessionId;
 
+      console.log('\n📖 [CHOICE] Processando escolha:');
+      console.log('   Story ID:', storyId);
+      console.log('   Next Chapter ID:', nextChapterId);
+      console.log('   Session ID:', sessionId);
+      console.log('   Body completo:', request.body);
+
       if (!nextChapterId) {
+        console.log('   ⚠️ Next Chapter ID está vazio, redirecionando...');
         return reply.redirect(`/read/${storyId}`);
       }
 
-      await ReadingProgress.findOneAndUpdate(
+      const result = await ReadingProgress.findOneAndUpdate(
         { session_id: sessionId, story_id: storyId },
         {
           current_chapter_id: nextChapterId,
@@ -111,9 +136,12 @@ async function publicRoutes(fastify, options) {
         { upsert: true, new: true }
       );
 
+      console.log('   ✅ Progresso atualizado:', result);
+      console.log('   ↪️  Redirecionando para /read/' + storyId + '\n');
+
       return reply.redirect(`/read/${storyId}`);
     } catch (err) {
-      console.error(err);
+      console.error('   ❌ Erro ao processar escolha:', err);
       return reply.redirect(`/read/${request.params.storyId}`);
     }
   });
