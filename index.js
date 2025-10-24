@@ -110,7 +110,7 @@ module.exports = async (req, res) => {
     await app.ready();
     console.log('✅ Aplicação pronta!');
   }
-  
+
   await app.ready();
   app.server.emit('request', req, res);
 };
