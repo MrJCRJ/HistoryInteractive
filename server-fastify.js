@@ -41,11 +41,14 @@ async function buildServer() {
   await fastify.register(require('@fastify/session'), {
     secret: SESSION_SECRET,
     cookie: {
-      secure: process.env.NODE_ENV === 'production',
+      secure: 'auto', // Detecta automaticamente HTTP/HTTPS
+      httpOnly: true,
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 dias
-      sameSite: 'lax'
+      sameSite: 'lax',
+      path: '/'
     },
-    saveUninitialized: true
+    saveUninitialized: true,
+    rolling: true // Renova o cookie a cada request
   });
 
   // Middleware de logging

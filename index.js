@@ -36,11 +36,14 @@ async function buildApp() {
   await fastify.register(require('@fastify/session'), {
     secret: SESSION_SECRET,
     cookie: {
-      secure: process.env.NODE_ENV === 'production',
+      secure: 'auto', // Detecta automaticamente HTTP/HTTPS
+      httpOnly: true,
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 dias
-      sameSite: 'lax'
+      sameSite: 'lax',
+      path: '/'
     },
-    saveUninitialized: true
+    saveUninitialized: true,
+    rolling: true // Renova o cookie a cada request
   });
 
   // Middleware de logging
@@ -102,15 +105,27 @@ async function buildApp() {
 
 // Para Vercel serverless
 let app;
+let isReady = false;
 
 module.exports = async (req, res) => {
-  if (!app) {
-    console.log('🔧 Inicializando aplicação Fastify para Vercel...');
-    app = await buildApp();
-    await app.ready();
-    console.log('✅ Aplicação pronta!');
-  }
+  try {
+    if (!app) {
+      console.log('🔧 Inicializando aplicação Fastify para Vercel...');
+      app = await buildApp();
+      isReady = false;
+    }
 
-  await app.ready();
-  app.server.emit('request', req, res);
+    if (!isReady) {
+      await app.ready();
+      isReady = true;
+      console.log('✅ Aplicação pronta!');
+    }
+
+    // Injetar requisição no Fastify
+    app.routing(req, res);
+  } catch (error) {
+    console.error('❌ Erro no handler Vercel:', error);
+    res.statusCode = 500;
+    res.end('Erro interno do servidor');
+  }
 };
