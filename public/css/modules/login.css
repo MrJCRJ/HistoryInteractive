@@ -1,5 +1,5 @@
 /* ============================================
-   LOGIN - Página de autenticação
+   LOGIN
    ============================================ */
 
 .login-page {
@@ -51,41 +51,4 @@
   margin-bottom: 45px;
   font-style: italic;
   font-size: 1.05em;
-}
-
-/* Link secreto */
-.secret-link {
-  position: fixed;
-  bottom: 35px;
-  right: 35px;
-  width: 50px;
-  height: 50px;
-  background: var(--gradient-warm);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-decoration: none;
-  color: transparent;
-  transition: all 0.4s ease;
-  box-shadow: 0 6px 25px rgba(212, 85, 31, 0.4);
-  z-index: 1000;
-  border: 2px solid var(--golden-accent);
-}
-
-.secret-link:hover {
-  background: var(--gradient-dramatic);
-  transform: scale(1.2) rotate(90deg);
-  box-shadow: 0 10px 40px rgba(212, 85, 31, 0.6);
-}
-
-.secret-link::before {
-  content: "🔐";
-  opacity: 0;
-  transition: opacity 0.4s;
-  font-size: 1.4em;
-}
-
-.secret-link:hover::before {
-  opacity: 1;
 }

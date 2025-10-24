@@ -25,10 +25,10 @@ async function buildServer() {
     root: path.join(__dirname, 'views')
   });
 
-  // Arquivos estáticos (sem prefix para compatibilidade com views)
+  // Arquivos estáticos
   await fastify.register(require('@fastify/static'), {
     root: path.join(__dirname, 'public'),
-    prefix: '/'
+    prefix: '/public/'
   });
 
   // Form body parser

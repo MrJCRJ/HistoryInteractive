@@ -1,0 +1,23 @@
+/* ============================================
+   HISTORY INTERACTIVE - CSS MODULAR v2.0
+   Arquivo principal que importa todos os módulos
+   ============================================ */
+
+/* 1. Variáveis e Reset (obrigatório primeiro) */
+@import "modules/variables.css";
+
+/* 2. Componentes base */
+@import "modules/buttons.css";
+@import "modules/forms.css";
+
+/* 3. Páginas */
+@import "modules/homepage.css";
+@import "modules/reader.css";
+@import "modules/login.css";
+@import "modules/admin.css";
+
+/* 4. Utilitários e animações */
+@import "modules/utilities.css";
+
+/* 5. Responsividade (obrigatório por último) */
+@import "modules/responsive.css";
